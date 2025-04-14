@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Analyzer - Sahaj Chokshi</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Additional styles specific to the analyzer page */
+        .analyzer-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        #inputText {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .action-button {
+            padding: 12px 25px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .action-button:hover {
+            background-color: #2980b9;
+        }
+        
+        #output {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .home-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .home-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container profile">
+            <h1 class="name animate-on-scroll">Text Analyzer</h1>
+            <p class="title animate-on-scroll">Analyze your text with ease</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <ul class="nav-links">
+                <li><a href="index.html" class="animate-scale">Back to Portfolio</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Analyzer Section -->
+    <section id="analyzer">
+        <div class="container analyzer-container">
+            <h2 class="section-title">Text Analyzer Tool</h2>
+            <p>Enter your text below and click "Analyze" to get detailed statistics.</p>
+            
+            <textarea id="inputText" rows="10" placeholder="Type or paste your text here..."></textarea>
+            
+            <button onclick="analyzeText()" class="action-button animate-scale">Analyze Text</button>
+            <button onclick="clearText()" class="action-button animate-scale" style="background-color: #e74c3c;">Clear</button>
+            
+            <div id="output" style="display: none;"></div>
+            
+            <a href="index.html" class="home-link">← Return to Portfolio</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p class="footer-text animate-on-scroll">&copy; 2025 Sahaj Chokshi. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Text Analysis -->
+    <script>
+        function analyzeText() {
+            const text = document.getElementById("inputText").value;
+            const output = document.getElementById("output");
+            
+            if (!text.trim()) {
+                output.innerHTML = '<p style="color: #e74c3c;">Please enter some text to analyze.</p>';
+                output.style.display = 'block';
+                return;
+            }
+            
+            const letterCount = (text.match(/[a-zA-Z]/g) || []).length;
+            const wordCount = (text.match(/\b\w+\b/g) || []).length;
+            const spaceCount = (text.match(/ /g) || []).length;
+            const newlineCount = (text.match(/\n/g) || []).length;
+            const specialSymbolCount = (text.match(/[^\w\s]/g) || []).length;
+
+            const words = text.toLowerCase().match(/\b\w+\b/g) || [];
+
+            const pronouns = ["i", "me", "you", "he", "him", "she", "her", "it", "we", "us", "they", "them"];
+            const prepositions = ["in", "on", "at", "by", "with", "about", "against", "between", "into", "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "of", "off", "over", "under"];
+            const articles = ["a", "an", "the"];
+
+            const countOccurrences = (list, type) => {
+                const counts = {};
+                list.forEach(word => {
+                    if (type.includes(word)) {
+                        counts[word] = (counts[word] || 0) + 1;
+                    }
+                });
+                return counts;
+            };
+
+            const pronounCounts = countOccurrences(words, pronouns);
+            const prepositionCounts = countOccurrences(words, prepositions);
+            const articleCounts = countOccurrences(words, articles);
+
+            const displayCounts = (title, counts) => {
+                const entries = Object.entries(counts);
+                if (entries.length === 0) return `<p>No ${title.toLowerCase()} found.</p>`;
+                return `<h4>${title}</h4>` + entries.map(([k, v]) => `<span style="margin-right:10px">${k}: <strong>${v}</strong></span>`).join(" ");
+            };
+
+            output.innerHTML = `
+                <h3>Text Analysis Results</h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px">
+                    <div style="background:#f1f8ff; padding:10px; border-radius:4px">
+                        <h4>Basic Statistics</h4>
+                        <p>Letters: <strong>${letterCount}</strong></p>
+                        <p>Words: <strong>${wordCount}</strong></p>
+                        <p>Spaces: <strong>${spaceCount}</strong></p>
+                        <p>Newlines: <strong>${newlineCount}</strong></p>
+                        <p>Special Symbols: <strong>${specialSymbolCount}</strong></p>
+                    </div>
+                    <div style="background:#f1f8ff; padding:10px; border-radius:4px">
+                        <h4>Additional Info</h4>
+                        <p>Average Word Length: <strong>${wordCount > 0 ? (letterCount / wordCount).toFixed(2) : 0}</strong> letters</p>
+                        <p>Text Length: <strong>${text.length}</strong> characters</p>
+                        <p>Alphanumeric Characters: <strong>${(text.match(/[a-zA-Z0-9]/g) || []).length}</strong></p>
+                    </div>
+                </div>
+                <div style="background:#f1f8ff; padding:10px; border-radius:4px; margin-bottom:15px">
+                    ${displayCounts("Pronoun Counts", pronounCounts)}
+                </div>
+                <div style="background:#f1f8ff; padding:10px; border-radius:4px; margin-bottom:15px">
+                    ${displayCounts("Preposition Counts", prepositionCounts)}
+                </div>
+                <div style="background:#f1f8ff; padding:10px; border-radius:4px">
+                    ${displayCounts("Article Counts", articleCounts)}
+                </div>
+            `;
+            
+            output.style.display = 'block';
+        }
+        
+        function clearText() {
+            document.getElementById("inputText").value = "";
+            document.getElementById("output").style.display = "none";
+        }
+    </script>
+</body>
+</html>
